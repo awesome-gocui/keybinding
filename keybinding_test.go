@@ -1,14 +1,15 @@
 package keybinding
 
 import (
-	"github.com/awesome-gocui/gocui"
 	"testing"
+
+	"github.com/awesome-gocui/gocui"
 )
 
 func TestParse(t *testing.T) {
 	var table = []struct {
 		input    string
-		key      gocui.Key
+		key      interface{}
 		modifier gocui.Modifier
 		errStr   string
 	}{
@@ -33,13 +34,15 @@ func TestParse(t *testing.T) {
 		{"ctrl + alt + z", gocui.KeyCtrlZ, gocui.ModAlt, ""},
 		{"f22", 0, gocui.ModNone, "unsupported keybinding: KeyF22"},
 		{"ctrl + alt + !", 0, gocui.ModAlt, "unsupported keybinding: KeyCtrl! (+1)"},
+		{"q", rune('q'), gocui.ModNone, ""},
+		{" q", rune('q'), gocui.ModNone, ""},
 	}
 
 	for idx, trial := range table {
 		actualKey, actualErr := Parse(trial.input)
 
 		if actualKey.Value != trial.key {
-			t.Errorf("Expected key '%+v' but got '%+v' (trial %d)", trial.key, actualKey, idx)
+			t.Errorf("Expected key '%+v' but got '%+v' (trial %d) %+v", trial.key, actualKey, idx, actualErr)
 		}
 
 		if actualKey.Modifier != trial.modifier {

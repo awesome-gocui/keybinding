@@ -124,13 +124,16 @@ type Key struct {
 // Parse turns the input string into an actual Key.
 // Returns an error when something goes wrong
 func Parse(input string) (Key, error) {
-
-	if len(input) == 1 && unicode.IsLetter(rune(input[0])) {
-		return Key{rune(input[0]), gocui.ModNone, []string{input}}, nil
-	}
-
 	f := func(c rune) bool { return unicode.IsSpace(c) || c == '+' }
 	tokens := strings.FieldsFunc(input, f)
+
+	if len(tokens) == 1 && len(tokens[0]) == 1 {
+		single := rune(tokens[0][0])
+		if unicode.IsLetter(single) {
+			return Key{single, gocui.ModNone, tokens}, nil
+		}
+	}
+
 	var normalizedTokens []string
 	var modifier = gocui.ModNone
 
